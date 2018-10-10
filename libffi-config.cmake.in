@@ -1,0 +1,28 @@
+# libffi-config.cmake
+# --------------------
+#
+# Libffi cmake module.
+# THis module sets the following variables:
+#
+# ::
+#
+#   LIBFFI_INCLUDE_DIRS      - Directory where libffi headers are located.
+#   LIBFFI_LIBRARIES         - ffi libraries to link against.
+#   LIBFFI_VERSION_MAJOR     - The major version of libffi.
+#   LIBFFI_VERSION_MINOR     - The minor version of libffi.
+#   LIBFFI_VERSION_PATCH     - The patch version of libffi.
+#   LIBFFI_VERSION_STRING    - version number as a string (ex: "2.3.4")
+#   LIBFFI_MODULES           - whether libffi as dso support
+
+get_filename_component(_libffi_rootdir ${CMAKE_CURRENT_LIST_DIR}/../../../ ABSOLUTE)
+
+set(LIBFFI_VERSION_MAJOR  @LIBFFI_VERSION_MAJOR@)
+set(LIBFFI_VERSION_MINOR  @LIBFFI_VERSION_MINOR@)
+set(LIBFFI_VERSION_MICRO  @LIBFFI_VERSION_MICRO@)
+set(LIBFFI_VERSION_STRING "@LIBFFI_VERSION@")
+set(LIBFFI_INSTALL_PREFIX ${_libffi_rootdir})
+set(LIBFFI_LIBRARY_DIRS   ${_libffi_rootdir}/lib)
+set(LIBFFI_INCLUDE_DIRS   ${_libffi_rootdir}/lib/libffi-@LIBFFI_VERSION@/include)
+set(LIBFFI_LIBRARIES      ffi)
+
+mark_as_advanced( LIBFFI_INCLUDE_DIRS LIBFFI_LIBRARIES )
