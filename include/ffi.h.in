@@ -117,6 +117,20 @@ typedef struct _ffi_type
   struct _ffi_type **elements;
 } ffi_type;
 
+#if defined _MSC_VER
+#if defined FFI_BUILDING
+#define FFI_EXPORT __declspec(dllexport)
+#else
+#if defined(_LIB)
+#define FFI_EXPORT
+#else
+#define FFI_EXPORT __declspec(dllimport)
+#endif
+#endif
+#else
+#define FFI_EXPORT
+#endif
+
 #ifndef LIBFFI_HIDE_BASIC_TYPES
 #if SCHAR_MAX == 127
 # define ffi_type_uchar                ffi_type_uint8
@@ -174,8 +188,16 @@ typedef struct _ffi_type
 /* of the library, but don't worry about that.  Besides,  */
 /* as a workaround, they can define FFI_BUILDING if they  */
 /* *know* they are going to link with the static library. */
-#if defined _MSC_VER && !defined FFI_BUILDING
+#if defined _MSC_VER
+#if defined FFI_BUILDING
+#define FFI_EXTERN __declspec(dllexport)
+#else
+#if defined(_LIB)
+#define FFI_EXTERN extern
+#else
 #define FFI_EXTERN extern __declspec(dllimport)
+#endif
+#endif
 #else
 #define FFI_EXTERN extern
 #endif
@@ -233,10 +255,12 @@ typedef struct {
 
 #if @HAVE_LONG_DOUBLE_VARIANT@
 /* Used to adjust size/alignment of ffi types.  */
+FFI_EXPORT
 void ffi_prep_types (ffi_abi abi);
 #endif
 
 /* Used internally, but overridden by some architectures */
+FFI_EXPORT
 ffi_status ffi_prep_cif_core(ffi_cif *cif,
 			     ffi_abi abi,
 			     unsigned int isvariadic,
@@ -282,26 +306,34 @@ typedef ffi_raw ffi_java_raw;
 #endif
 
 
+FFI_EXPORT
 void ffi_raw_call (ffi_cif *cif,
 		   void (*fn)(void),
 		   void *rvalue,
 		   ffi_raw *avalue);
 
+FFI_EXPORT
 void ffi_ptrarray_to_raw (ffi_cif *cif, void **args, ffi_raw *raw);
+FFI_EXPORT
 void ffi_raw_to_ptrarray (ffi_cif *cif, ffi_raw *raw, void **args);
+FFI_EXPORT
 size_t ffi_raw_size (ffi_cif *cif);
 
 /* This is analogous to the raw API, except it uses Java parameter	*/
 /* packing, even on 64-bit machines.  I.e. on 64-bit machines		*/
 /* longs and doubles are followed by an empty 64-bit word.		*/
 
+FFI_EXPORT
 void ffi_java_raw_call (ffi_cif *cif,
 			void (*fn)(void),
 			void *rvalue,
 			ffi_java_raw *avalue);
 
+FFI_EXPORT
 void ffi_java_ptrarray_to_raw (ffi_cif *cif, void **args, ffi_java_raw *raw);
+FFI_EXPORT
 void ffi_java_raw_to_ptrarray (ffi_cif *cif, ffi_java_raw *raw, void **args);
+FFI_EXPORT
 size_t ffi_java_raw_size (ffi_cif *cif);
 
 /* ---- Definitions for closures ----------------------------------------- */
@@ -330,15 +362,19 @@ typedef struct {
 # endif
 #endif
 
+FFI_EXPORT
 void *ffi_closure_alloc (size_t size, void **code);
+FFI_EXPORT
 void ffi_closure_free (void *);
 
+FFI_EXPORT
 ffi_status
 ffi_prep_closure (ffi_closure*,
 		  ffi_cif *,
 		  void (*fun)(ffi_cif*,void*,void**,void*),
 		  void *user_data);
 
+FFI_EXPORT
 ffi_status
 ffi_prep_closure_loc (ffi_closure*,
 		      ffi_cif *,
@@ -400,12 +436,14 @@ typedef struct {
 
 } ffi_java_raw_closure;
 
+FFI_EXPORT
 ffi_status
 ffi_prep_raw_closure (ffi_raw_closure*,
 		      ffi_cif *cif,
 		      void (*fun)(ffi_cif*,void*,ffi_raw*,void*),
 		      void *user_data);
 
+FFI_EXPORT
 ffi_status
 ffi_prep_raw_closure_loc (ffi_raw_closure*,
 			  ffi_cif *cif,
@@ -413,12 +451,14 @@ ffi_prep_raw_closure_loc (ffi_raw_closure*,
 			  void *user_data,
 			  void *codeloc);
 
+FFI_EXPORT
 ffi_status
 ffi_prep_java_raw_closure (ffi_java_raw_closure*,
 		           ffi_cif *cif,
 		           void (*fun)(ffi_cif*,void*,ffi_java_raw*,void*),
 		           void *user_data);
 
+FFI_EXPORT
 ffi_status
 ffi_prep_java_raw_closure_loc (ffi_java_raw_closure*,
 			       ffi_cif *cif,
@@ -430,12 +470,14 @@ ffi_prep_java_raw_closure_loc (ffi_java_raw_closure*,
 
 /* ---- Public interface definition -------------------------------------- */
 
+FFI_EXPORT
 ffi_status ffi_prep_cif(ffi_cif *cif,
 			ffi_abi abi,
 			unsigned int nargs,
 			ffi_type *rtype,
 			ffi_type **atypes);
 
+FFI_EXPORT
 ffi_status ffi_prep_cif_var(ffi_cif *cif,
 			    ffi_abi abi,
 			    unsigned int nfixedargs,
@@ -443,6 +485,7 @@ ffi_status ffi_prep_cif_var(ffi_cif *cif,
 			    ffi_type *rtype,
 			    ffi_type **atypes);
 
+FFI_EXPORT
 void ffi_call(ffi_cif *cif,
 	      void (*fn)(void),
 	      void *rvalue,
